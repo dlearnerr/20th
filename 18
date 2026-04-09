@@ -1,0 +1,28 @@
+mkdir docker-exp18
+cd docker-exp18
+
+from http.server import *
+
+class H(SimpleHTTPRequestHandler):
+    def do_GET(s):
+        s.send_response(200)
+        s.end_headers()
+        s.wfile.write(b"Hello from Docker")
+
+HTTPServer(("",5020),H).serve_forever()
+
+FROM python:3.10-slim
+WORKDIR /app
+COPY . .
+EXPOSE 5020
+CMD ["python", "app.py"]
+
+docker build -t my-app .
+
+docker tag my-app <username>/my-app:latest
+
+docker push dhananjay/my-app:latest
+
+docker pull dhananjays1/my-app:latest
+
+docker run -p 5020:5020 dhananjay/my-app
